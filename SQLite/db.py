@@ -17,13 +17,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS groceries (
 
 #Create user table
 cursor.execute("""CREATE TABLE IF NOT EXISTS users(
-            username text NOT NULL,
+            username text NOT NULL UNIQUE,
             PRIMARY KEY (username)
         )""")
 
 #Create registered registered user table
 cursor.execute("""CREATE TABLE IF NOT EXISTS registeredusers(
-            username text NOT NULL,
+            username text NOT NULL UNIQUE,
             password text NOT NULL,
             name text NOT NULL,
             address text NOT NULL,
@@ -58,7 +58,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS receipt(
             FOREIGN KEY (order_id) REFERENCES orders(order_id)
         )""")
 
-
+#Create cart table
+cursor.execute("""CREATE TABLE IF NOT EXISTS cart(
+            contents blob NOT NULL,
+            user_id text NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(username)
+            FOREIGN KEY (contents) REFERENCES groceries(item_id)
+        )""")
 
 #Create employee table
 cursor.execute("""CREATE TABLE IF NOT EXISTS employees(
@@ -210,5 +216,5 @@ insert_item(1,"Bread", "images/bread.png", "Food", 12, 2.97)
 fetch_item(1)
 fetch_user("john")
 insert_user("john", "pass1", "john", "123 john st")
-insert_user("john", "pass1", "john", "123 john st")
+insert_user("john", "pass2", "john", "123 john st")
 
