@@ -16,7 +16,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = os.path.join(BASE_DIR, "grocerystore_website")
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -38,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'grocerystore_website.grocery',
 ]
 
 MIDDLEWARE = [
@@ -70,14 +70,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'grocerystore_website.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': {},
+    'user_auth': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'grocery.db',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'grocery': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'grocery.sqlite3',
     }
 }
 
@@ -125,3 +129,4 @@ LOGIN_REDIRECT_URL = "home"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DATABASE_ROUTERS = ['grocerystore_website.db_router.AuthRouter','grocerystore_website.db_router.GroceryRouter',]
