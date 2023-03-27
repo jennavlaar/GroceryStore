@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'grocerystore_website.grocery',
+    'grocerystore_website.gs'
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,7 @@ TEMPLATES = [
         },
     },
 ]
+CRISPY_TEMPLATE_PACK="bootstrap4"
 
 WSGI_APPLICATION = 'grocerystore_website.wsgi.application'
 
@@ -74,14 +75,9 @@ WSGI_APPLICATION = 'grocerystore_website.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {},
-    'user_auth': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'grocery': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'grocery.sqlite3',
     }
 }
 
@@ -129,4 +125,3 @@ LOGIN_REDIRECT_URL = "home"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DATABASE_ROUTERS = ['grocerystore_website.db_router.AuthRouter','grocerystore_website.db_router.GroceryRouter',]

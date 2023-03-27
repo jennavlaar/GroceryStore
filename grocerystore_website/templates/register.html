@@ -1,0 +1,56 @@
+{%block context%}
+
+{%if form.errors%}
+<div class="alert alert-warning alert-dismissable fade show" role="alert">
+    Error: Form not filled correctly.
+    <button type = "button"
+    class = "btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"></button>
+</div>
+{%endif%}
+    <h1>Register</h1>
+<br/>
+        <form method=POST>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Register" class="btn btn-secondary">
+
+        </form>
+        <br/><br/>
+{%endblock%}
+
+<!--
+<form method = "POST"> 
+    {% csrf_token %} 
+    <div class="container">
+      <h1>Register for an Account</h1>
+      <hr>
+      <label for="username"><b>Email</b></label>
+      <input type="text" placeholder="Enter Username" name="username" id="username" required>
+  
+      <label for="password"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" id="password" required>
+
+      <label for="name"><b>Name</b></label>
+      <input type="text" placeholder="Enter Your Name" name="name" id="name" required>
+
+      <label for="address"><b>Address</b></label>
+      <input type="text" placeholder="Enter Your Address" name="address" id="address" required>
+
+
+      <h4>Register for an Admin Account?</h4>
+    <input type="radio" name="admin" value="yes"> Yes
+    <input type="radio" name="admin" value="no" checked> No
+      <hr>
+      <button type="submit"> <a href="login">Create Account</a>
+   
+    
+    </div>
+  
+    <div class="container signin">
+      <p>Already have an account? <a href="login">Sign in</a>.</p>
+    </div>
+</form>
+
+-->

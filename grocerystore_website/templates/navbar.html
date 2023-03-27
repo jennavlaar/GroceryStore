@@ -10,7 +10,12 @@
     <span>{% if request.path == account_url %}Account{%else%}<a href="{%url 'account'%}">Account</a></span>
     {%endif%}
     {%endif%}
-    
+    {%if user.is_admin %}
+    {%url 'admin' as admin_url %}
+    <span>{% if request.path == admin_url %}Account{%else%}<a href="{%url 'admin'%}">Admin Controls</a></span>
+    {%endif%}
+    {%endif%}
+
     <span style="float:right">
         {%if user.is_authenticated %}
         <span><a href="{%url 'logout'%}">Log out</a></span>
