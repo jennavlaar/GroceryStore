@@ -5,116 +5,120 @@ cursor = connect.cursor()
 
 #Create groceries table
 cursor.execute("""CREATE TABLE IF NOT EXISTS groceries (
-            item_id integer NOT NULL,
-            item_name text NOT NULL,
-            item_img blob NOT NULL,
-            category text NOT NULL,
-            stock integer NOT NULL,
-            price real NOT NULL,
+            item_id INTEGER NOT NULL,
+            item_name TEXT NOT NULL,
+            item_img BLOB NOT NULL,
+            category TEXT NOT NULL,
+            stock INTEGER NOT NULL,
+            price REAL NOT NULL,
             PRIMARY KEY (item_id),
             FOREIGN KEY(item_name) REFERENCES product(product_name)
         )""")
 
 #Create user table
 cursor.execute("""CREATE TABLE IF NOT EXISTS users(
-            username text NOT NULL UNIQUE,
+            username TEXT NOT NULL UNIQUE,
+            first_name TEXT,
+            last_name TEXT,
             PRIMARY KEY (username)
         )""")
 
 #Create registered registered user table
 cursor.execute("""CREATE TABLE IF NOT EXISTS registeredusers(
-            username text NOT NULL,
-            password text NOT NULL,
-            name text NOT NULL,
-            address text NOT NULL,
+            username TEXT NOT NULL,
+            password TEXT NOT NULL,
+            first_name TEXT,
+            last_name TEXT,
+            address TEXT NOT NULL,
             FOREIGN KEY (username) REFERENCES users(username)
         )""")
 
 #Create admin user table
 cursor.execute("""CREATE TABLE IF NOT EXISTS admin(
-            admin_id integer NOT NULL,
-            username text NOT NULL,
-            password text NOT NULL,
-            name text NOT NULL,
-            address text NOT NULL,
+            admin_id INTEGER NOT NULL,
+            username TEXT NOT NULL,
+            password TEXT NOT NULL,
+            first_name TEXT,
+            last_name TEXT,
+            address TEXT NOT NULL,
             PRIMARY KEY (admin_id),
             FOREIGN KEY (username) REFERENCES users(username)
         )""")
 
 #Create order table
 cursor.execute("""CREATE TABLE IF NOT EXISTS orders(
-            order_id integer NOT NULL,
-            username text NOT NULL,
-            address text NOT NULL,
+            order_id INTEGER NOT NULL,
+            username TEXT NOT NULL,
+            shipping_address TEXT NOT NULL,
             PRIMARY KEY (order_id),
             FOREIGN KEY (username) REFERENCES users(username)
         )""")
 
 #Create receipt table
 cursor.execute("""CREATE TABLE IF NOT EXISTS receipt(
-            order_id integer NOT NULL,
-            total real NOT NULL,
+            order_id INTEGER NOT NULL,
+            total REAL NOT NULL,
+            date DATE NOT NULL,
             PRIMARY KEY (order_id),
             FOREIGN KEY (order_id) REFERENCES orders(order_id)
         )""")
 
 #Create cart table
 cursor.execute("""CREATE TABLE IF NOT EXISTS cart(
-            contents blob NOT NULL,
-            user_id text NOT NULL,
+            contents BLOB NOT NULL,
+            user_id TEXT NOT NULL,
+            cart_number INTEGER NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(username)
             FOREIGN KEY (contents) REFERENCES groceries(item_id)
         )""")
 
 #Create employee table
 cursor.execute("""CREATE TABLE IF NOT EXISTS employees(
-            employee_id integer NOT NULL,
-            first_name text NOT NULL,
-            last_name text NOT NULL,
-            employer text NOT NULL,
+            employee_id INTEGER NOT NULL,
+            first_name TEXT NOT NULL,
+            last_name TEXT NOT NULL,
+            employer TEXT NOT NULL,
             PRIMARY KEY (employee_id)
             FOREIGN KEY (employer) REFERENCES supplier(name)
         )""")
 
 #Create supplier table
 cursor.execute("""CREATE TABLE IF NOT EXISTS suppliers(
-            supplier_name text NOT NULL,
-            product text NOT NULL,
+            supplier_name TEXT NOT NULL,
+            product TEXT NOT NULL,
             PRIMARY KEY (supplier_name)
             FOREIGN KEY (product) REFERENCES product(product_name)
         )""")
 
 #Create product table
 cursor.execute("""CREATE TABLE IF NOT EXISTS product(
-            product_name text NOT NULL,
+            product_name TEXT NOT NULL,
             stock int NOT NULL,
             PRIMARY KEY (product_name)
         )""")
 
 #Create product table
 cursor.execute("""CREATE TABLE IF NOT EXISTS supplies(
-            supplier text NOT NULL,
-            grocery_item text NOT NULL,
+            supplier TEXT NOT NULL,
+            grocery_item TEXT NOT NULL,
             FOREIGN KEY (supplier) REFERENCES suppliers(supplier_name)
             FOREIGN KEY (grocery_item) REFERENCES groceries(item_id)
         )""")
 
 #Create farm table
 cursor.execute("""CREATE TABLE IF NOT EXISTS farm(
-            farm_name text NOT NULL,
-            location text NOT NULL,
+            farm_name TEXT NOT NULL,
+            location TEXT NOT NULL,
             PRIMARY KEY (farm_name)
         )""")
 
 #Create sells to table
 cursor.execute("""CREATE TABLE IF NOT EXISTS sellsto(
-            farm_name text NOT NULL,
-            supplier text NOT NULL,
+            farm_name TEXT NOT NULL,
+            supplier TEXT NOT NULL,
             FOREIGN KEY (supplier) REFERENCES suppliers(supplier_name)
             FOREIGN KEY (farm_name) REFERENCES farm(farm_name)
         )""")
-
-
 
 connect.close()
 
@@ -150,12 +154,12 @@ def add_item(item_id, item_name, item_img, category, stock, price):
           
 #insert UNIQUE user into users table  
 
-def add_user(username):
+def add_user(username, first_name, last_name):
     try:
         connection = sqlite3.connect('grocery.sqlite3')
         cursor = connection.cursor()
-        insert_query = """INSERT INTO users VALUES (?)"""
-        data = (username,)
+        insert_query = """INSERT INTO users VALUES (?, ?, ?)"""
+        data = (username,first_name,last_name)
         cursor.execute(insert_query, data)
         connection.commit()
         cursor.close()
@@ -165,21 +169,20 @@ def add_user(username):
         if connection:
             connection.close()
 
-def add_registereduser(username, password, name, address):
+def add_registereduser(username, password, first_name, last_name, address):
     try:
         add_user(username)
         connection = sqlite3.connect('grocery.sqlite3')
         cursor = connection.cursor()
 
         insert_query = """INSERT INTO registeredusers 
-                        (username, password, name, address) VALUES (?, ?, ?, ?)"""
-        data = (username, password, name, address)
+                        (username, password, name, address) VALUES (?, ?, ?, ?, ?)"""
+        data = (username, password, first_name, last_name, address)
         cursor.execute(insert_query, data)
         connection.commit()
         cursor.close()
     except sqlite3.Error as error:
         print(error)
-        #print("Username already exists") #prompt user to pick different username
     finally:
         if connection:
             connection.close()
@@ -264,7 +267,9 @@ def get_user(username):
 def login_user(username, password):
     db = connect()
     cursor = db.cursor()
-    cursor.execute(f"SELECT * FROM USER WHERE username={username} AND password='{password}'")
+    data = (username, password)
+    cursor.execute((f"SELECT * FROM USER WHERE username=? AND password=?"), data)
+    
     user = cursor.fetchall()
     if len(user) == 1:
         cursor.close()
